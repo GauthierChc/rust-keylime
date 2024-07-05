@@ -71,15 +71,20 @@ RUN dnf install -y \
     tpm2-tss-devel \
     uthash-devel \
     wget \
-    which
+    which \
+    gpgme-devel \
+    swig \
+    python3-gpg \
+    && pip3 install jinja2 \
+    && pip3 install gnupg
 
 WORKDIR ${HOME}
 RUN git clone https://github.com/keylime/keylime.git && \
 cd keylime && \
-sed -e 's/127.0.0.1/0.0.0.0/g' keylime-agent.conf > tmp_keylime-agent.conf && \
-mv tmp_keylime-agent.conf keylime-agent.conf && \
-python3 ${KEYLIME_HOME}/setup.py install && \
+sed -e 's/127.0.0.1/0.0.0.0/g' keylime.conf > tmp_keylime.conf && \
+mv tmp_keylime.conf keylime.conf && \
 pip3 install -r $KEYLIME_HOME/requirements.txt && \
+python3 ${KEYLIME_HOME}/setup.py install && \
 ${KEYLIME_HOME}/services/installer.sh
 
 RUN dnf makecache && \

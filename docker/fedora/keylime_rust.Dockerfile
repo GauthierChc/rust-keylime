@@ -13,7 +13,11 @@ ARG BRANCH=master
 ENV RUST_KEYLIME_HOME ${HOME}/rust-keylime
 ENV container docker
 COPY dbus-policy.conf /etc/dbus-1/system.d/
+COPY wait_for_registrar.sh /root/
 
+# custom
+ENV RUST_BACKTRACE 1
+ENV RUST_BACKTRACE full
 # Install dev tools and libraries (includes openssl-devel)
 RUN dnf groupinstall -y \
     "Development Tools" \
@@ -58,9 +62,9 @@ RUN dnf makecache && \
   rm -rf /var/cache/dnf/*
 
 # clone and build rust-keylime
-WORKDIR ${RUST_KEYLIME_HOME}
 RUN git clone https://github.com/keylime/rust-keylime.git && \
 cd rust-keylime && \
 make && \
 make install && \
 cargo clean
+WORKDIR ${RUST_KEYLIME_HOME}

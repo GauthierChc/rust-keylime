@@ -9,40 +9,62 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
+      - debug-volume:/etc
     ports:
         - "8892:8892"
-    command: [
-      "/usr/local/bin/keylime_verifier"
-    ]
+        - "8880:8880"
+        - "8881:8881"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        mkdir -p /etc/keylime/
+        cp -r /root/keylime/config/. /etc/keylime/
+        /usr/local/bin/keylime_verifier
   keylime-registrar:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
     image: keylime_py
-    hostname: 'keylime-verifier' # this is a bit of poor workaround, will fix in python code
+    hostname: 'keylime-registrar'
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
+      - debug-volume:/etc
     ports:
         - "8891:8891"
         - "8890:8890"
     command: ["/root/wait.sh", "/var/lib/keylime/cv_ca/client-cert.crt", "keylime_registrar"]
-  keylime_agent:
+    depends_on:
+      - keylime-verifier
+  keylime-agent:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_rust.Dockerfile
     image: keylime_rust
     hostname: 'keylime-agent'
-    user: root
+    user: root  # Start as root to ensure user creation and permissions
     volumes:
-      - ./target/debug/:/rust-keylime
+      - secure-volume:/var/lib/keylime
+      - /sys/kernel/security/:/sys/kernel/security/
     network_mode: host
+    privileged: true  # Add this line
+    depends_on:
+      - keylime-verifier
+    cap_add:
+      - SYS_ADMIN  # Add SYS_ADMIN capabilities if needed
+      - SETUID
+      - SETGID
     environment:
     - TCTI=tabrmd:bus_type=system
+    ports:
+        - "9002:9002"
     command:
       - /bin/bash
       - -c
       - |
+        chmod 111 /root/wait_for_registrar.sh
+        /root/wait_for_registrar.sh
         mkdir /tmp/tpmdir
         rm -rf /var/run/dbus
         mkdir /var/run/dbus
@@ -64,7 +86,14 @@ services:
             --tcti=swtpm: \
             --allow-root \
             --flush-all &
-        RUST_LOG=keylime_agent=trace /rust-keylime/keylime_agent
+        echo "Ensuring /var/lib/keylime/secure exists..."
+        mkdir -p /var/lib/keylime/secure
+        echo "Attempting to mount tmpfs..."
+        mount -t tmpfs tmpfs /var/lib/keylime/secure && echo "Mounted tmpfs successfully." || echo "Failed to mount tmpfs."
+        id -u keylime &>/dev/null || useradd -m keylime
+        chown -R keylime:keylime /var/lib/keylime
+        RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent &
+        tail -f /dev/null
 volumes:
   secure-volume:
-
+  debug-volume:
