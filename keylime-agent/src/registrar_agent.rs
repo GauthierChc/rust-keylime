@@ -113,16 +113,35 @@ pub(crate) async fn do_activate_agent(
         addr, agent_uuid
     );
 
-    let resp = reqwest::Client::new().put(&addr).json(&data).send().await?;
+    // Log request details before sending
+    debug!("Sending PUT request to: {}", addr);
+    debug!("Request data: {:?}", data);
 
+    let client = reqwest::Client::new();
+    let resp = client.put(&addr).json(&data).send().await?;
+
+    // Log response status and headers
+    if let Some(status) = resp.status() {
+        info!("Response status: {}", status);
+    } else {
+        warn!("Response status not available");
+    }
+
+    // Handle response
     if !resp.status().is_success() {
+        // Log error details
+        warn!("Request failed with status code: {}", resp.status().as_u16());
+
+        // Return error
         return Err(Error::Registrar {
             addr,
             code: resp.status().as_u16(),
         });
     }
 
-    let resp: Response<ActivateResponseResults> = resp.json().await?;
+    // Parse response
+    let resp_body: Response<ActivateResponseResults> = resp.json().await?;
+    info!("Response body: {:?}", resp_body);
 
     Ok(())
 }
