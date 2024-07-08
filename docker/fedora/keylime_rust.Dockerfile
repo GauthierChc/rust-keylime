@@ -62,7 +62,7 @@ RUN dnf makecache && \
   rm -rf /var/cache/dnf/*
 
 # clone and build rust-keylime
-RUN git clone https://github.com/keylime/rust-keylime.git && \
+RUN git clone https://github.com/GauthierChc/rust-keylime.git && \
 cd rust-keylime && \
 make && \
 make install && \
