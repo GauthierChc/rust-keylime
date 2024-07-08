@@ -226,7 +226,7 @@ pub(crate) async fn do_register_agent(
 
     info!("Message written by Damien")
     info!(
-        "Requesting agent registration from {} for {}",
+        "Requesting agent registration Damien from {} for {}",
         addr, agent_uuid
     );
 
