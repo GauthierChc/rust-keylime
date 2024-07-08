@@ -224,9 +224,9 @@ pub(crate) async fn do_register_agent(
         "http://{remote_ip}:{registrar_port}/{API_VERSION}/agents/{agent_uuid}"
     );
 
-    info!("Message written by Damien")
+    info!("Message written by Damien");
     info!(
-        "Requesting agent registration Damien from {} for {}",
+        "Requesting agent registration from {} for {}",
         addr, agent_uuid
     );
 
