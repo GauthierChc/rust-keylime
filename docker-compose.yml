@@ -41,7 +41,7 @@ services:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_rust.Dockerfile
-    image: keylime_rust
+    # image: keylime_rust
     hostname: 'keylime-agent'
     user: root  # Start as root to ensure user creation and permissions
     volumes:
