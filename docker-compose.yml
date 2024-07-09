@@ -9,10 +9,9 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
+      - debug-volume:/etc
     ports:
         - "8892:8892"
-        - "8880:8880"
-        - "8881:8881"
     command: [
       "/usr/local/bin/keylime_verifier"
     ]
@@ -25,6 +24,7 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
+      - debug-volume:/etc
     ports:
         - "8891:8891"
         - "8890:8890"
@@ -53,8 +53,6 @@ services:
       - SETGID
     environment:
     - TCTI=tabrmd:bus_type=system
-    ports:
-        - "9002:9002"
     command:
       - /bin/bash
       - -c
@@ -92,3 +90,4 @@ services:
         tail -f /dev/null
 volumes:
   secure-volume:
+  debug-volume:
