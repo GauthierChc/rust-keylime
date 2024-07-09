@@ -9,7 +9,7 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - debug-volume:/etc/keylime
+      - debug-volume:/etc
     ports:
         - "8892:8892"
     command: [
@@ -24,7 +24,7 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - debug-volume:/etc/keylime
+      - debug-volume:
     ports:
         - "8891:8891"
         - "8890:8890"
