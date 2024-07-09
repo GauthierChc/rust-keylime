@@ -4,11 +4,12 @@ services:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
+    image: keylime_py
     hostname: 'keylime-verifier'
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - special-volume:/etc
+      - debug-volume:/etc
     ports:
         - "8892:8892"
     command: [
@@ -18,11 +19,12 @@ services:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
+    image: keylime_py
     hostname: 'keylime-registrar'
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - special-volume:/etc
+      - debug-volume:/etc
     ports:
         - "8891:8891"
         - "8890:8890"
@@ -41,6 +43,7 @@ services:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_rust.Dockerfile
+    image: keylime_rust
     hostname: 'keylime-agent'
     user: root
     volumes:
@@ -89,4 +92,4 @@ services:
         RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
 volumes:
   secure-volume:
-  special-volume:
+  debug-volume:
