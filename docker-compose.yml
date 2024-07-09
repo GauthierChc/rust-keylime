@@ -9,7 +9,6 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - debug-volume:/etc
     ports:
         - "8892:8892"
         - "8880:8880"
