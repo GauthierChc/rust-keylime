@@ -83,7 +83,7 @@ RUN git clone https://github.com/keylime/keylime.git && \
 cd keylime && \
 sed -e 's/127.0.0.1/0.0.0.0/g' keylime.conf > tmp_keylime.conf && \
 mv tmp_keylime.conf keylime.conf && \
-pwd && \
+ls && \
 touch $KEYLIME_HOME/config/tmp_registrar.conf && \
 sed -e 's/127.0.0.1/0.0.0.0/g' $KEYLIME_HOME/config/registrar.conf > $KEYLIME_HOME/config/tmp_registrar.conf && \
 mv $KEYLIME_HOME/config/tmp_registrar.conf $KEYLIME_HOME/config/registrar.conf && \
