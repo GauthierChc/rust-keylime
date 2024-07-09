@@ -46,6 +46,9 @@ services:
     network_mode: host
     depends_on:
       - keylime-verifier
+    cap_add:
+      - SETUID
+      - SETGID
     environment:
     - TCTI=tabrmd:bus_type=system
     command:
