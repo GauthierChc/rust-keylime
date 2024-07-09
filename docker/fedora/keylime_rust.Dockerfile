@@ -13,11 +13,7 @@ ARG BRANCH=master
 ENV RUST_KEYLIME_HOME ${HOME}/rust-keylime
 ENV container docker
 COPY dbus-policy.conf /etc/dbus-1/system.d/
-COPY wait_for_registrar.sh /root/
 
-# custom
-ENV RUST_BACKTRACE 1
-ENV RUST_BACKTRACE full
 # Install dev tools and libraries (includes openssl-devel)
 RUN dnf groupinstall -y \
     "Development Tools" \
