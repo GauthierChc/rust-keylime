@@ -11,9 +11,12 @@ services:
       - secure-volume:/var/lib/keylime
     ports:
         - "8892:8892"
-    command: [
-      "/usr/local/bin/keylime_verifier"
-    ]
+    command:
+      - /bin/bash
+      - -c
+      - |
+        /usr/local/bin/keylime_verifier &
+        tail -f /dev/null
   keylime-registrar:
     build:
       context: ./docker/fedora/
