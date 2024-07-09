@@ -732,7 +732,7 @@ async fn main() -> Result<()> {
                     &PublicBuffer::try_from(idevid.public.clone())?
                         .marshall()?,
                 ),
-                idevid_cert,
+                idevid_cert
                 iak_cert,
                 Some(attest.marshall()?),
                 Some(signature.marshall()?),
