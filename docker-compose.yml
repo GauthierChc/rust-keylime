@@ -77,6 +77,12 @@ services:
             --tcti=swtpm: \
             --allow-root \
             --flush-all &
+        echo "Ensuring /var/lib/keylime/secure exists..."
+        mkdir -p /var/lib/keylime/secure
+        echo "Attempting to mount tmpfs..."
+        mount -t tmpfs tmpfs /var/lib/keylime/secure && echo "Mounted tmpfs successfully." || echo "Failed to mount tmpfs."
+        id -u keylime &>/dev/null || useradd -m keylime
+        chown -R keylime:keylime /var/lib/keylime
         RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
 volumes:
   secure-volume:
