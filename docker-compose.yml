@@ -33,6 +33,8 @@ services:
     command: ["/root/wait.sh", "/var/lib/keylime/cv_ca/client-cert.crt", "keylime_registrar"]
     depends_on:
       - keylime-verifier
+    environment:
+    - KEYLIME_REGISTRAR_IP = "0.0.0.0"
   keylime-agent:
     build:
       context: ./docker/fedora/
