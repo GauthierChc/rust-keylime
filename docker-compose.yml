@@ -26,7 +26,6 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - debug-volume:/etc
     ports:
         - "8891:8891"
         - "8890:8890"
@@ -94,4 +93,3 @@ services:
         tail -f /dev/null
 volumes:
   secure-volume:
-  debug-volume:

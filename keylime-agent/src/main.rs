@@ -716,7 +716,6 @@ async fn main() -> Result<()> {
                         .to_string(),
                 ));
             };
-            info!("First choice made");
             registrar_agent::do_register_agent(
                 config.agent.registrar_ip.as_ref(),
                 config.agent.registrar_port,
@@ -743,7 +742,6 @@ async fn main() -> Result<()> {
             )
             .await?
         } else {
-            info!("Second choice made");
             registrar_agent::do_register_agent(
                 config.agent.registrar_ip.as_ref(),
                 config.agent.registrar_port,
