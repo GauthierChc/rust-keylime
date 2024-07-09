@@ -12,9 +12,7 @@ services:
       - shared-etc-volume:/etc
     ports:
         - "8892:8892"
-    command: [
-      "/usr/local/bin/keylime_verifier"
-    ]
+    command: ["/usr/local/bin/keylime_verifier"]
   keylime-registrar:
     build:
       context: ./docker/fedora/
@@ -28,13 +26,7 @@ services:
     ports:
         - "8891:8891"
         - "8890:8890"
-    command:
-      - /bin/bash
-      - -c
-      - |
-        /root/wait.sh
-        /var/lib/keylime/cv_ca/client-cert.crt
-        keylime_registrar
+    command: ["/root/wait.sh", "/var/lib/keylime/cv_ca/client-cert.crt", "keylime_registrar"]
     depends_on:
       - keylime-verifier
     environment:
