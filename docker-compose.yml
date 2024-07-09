@@ -47,6 +47,7 @@ services:
     depends_on:
       - keylime-verifier
     cap_add:
+      - SYS_ADMIN  # Add SYS_ADMIN capabilities if needed
       - SETUID
       - SETGID
     environment:
