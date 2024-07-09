@@ -9,7 +9,7 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - shared-var-volume:/etc
+      - var-volume:/etc
     ports:
         - "8892:8892"
     command: [
@@ -24,7 +24,7 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
-      - shared-var-volume:/etc
+      - var-volume:/etc
     ports:
         - "8891:8891"
         - "8890:8890"
@@ -92,4 +92,4 @@ services:
         RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
 volumes:
   secure-volume:
-  shared-var-volume:
+  var-volume:
