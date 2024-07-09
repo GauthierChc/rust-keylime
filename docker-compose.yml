@@ -19,7 +19,6 @@ services:
       - -c
       - |
         mkdir -p /etc/keylime/
-        cp -r /root/keylime/config/. /etc/keylime/
         /usr/local/bin/keylime_verifier
   keylime-registrar:
     build:
