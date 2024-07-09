@@ -34,7 +34,7 @@ services:
     depends_on:
       - keylime-verifier
     environment:
-    - KEYLIME_REGISTRAR_IP = "0.0.0.0"
+      KEYLIME_REGISTRAR_IP: "0.0.0.0"
   keylime-agent:
     build:
       context: ./docker/fedora/
