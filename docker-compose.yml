@@ -54,6 +54,7 @@ services:
       - /bin/bash
       - -c
       - |
+        chmod 111 /root/wait_for_registrar.sh
         /root/wait_for_registrar.sh
         mkdir /tmp/tpmdir
         rm -rf /var/run/dbus
@@ -82,8 +83,7 @@ services:
         mount -t tmpfs tmpfs /var/lib/keylime/secure && echo "Mounted tmpfs successfully." || echo "Failed to mount tmpfs."
         id -u keylime &>/dev/null || useradd -m keylime
         chown -R keylime:keylime /var/lib/keylime
-        RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent &
-        tail -f /dev/null
+        RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
 volumes:
   secure-volume:
   debug-volume:
