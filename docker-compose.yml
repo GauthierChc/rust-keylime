@@ -14,13 +14,9 @@ services:
         - "8892:8892"
         - "8880:8880"
         - "8881:8881"
-    command:
-      - /bin/bash
-      - -c
-      - |
-        mkdir -p /etc/keylime/
-        cp -r /root/keylime/config/. /etc/keylime/
-        /usr/local/bin/keylime_verifier
+    command: [
+      "/usr/local/bin/keylime_verifier"
+    ]
   keylime-registrar:
     build:
       context: ./docker/fedora/
@@ -30,6 +26,7 @@ services:
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
+      - debug-volume:/etc
     ports:
         - "8891:8891"
         - "8890:8890"
@@ -40,7 +37,7 @@ services:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_rust.Dockerfile
-    # image: keylime_rust
+    image: keylime_rust
     hostname: 'keylime-agent'
     user: root  # Start as root to ensure user creation and permissions
     volumes:
