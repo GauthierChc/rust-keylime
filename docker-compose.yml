@@ -39,10 +39,7 @@ services:
       dockerfile: keylime_rust.Dockerfile
     image: keylime_rust
     hostname: 'keylime-agent'
-    user: root  # Start as root to ensure user creation and permissions
-    volumes:
-      - secure-volume:/var/lib/keylime
-      - /sys/kernel/security/:/sys/kernel/security/
+    user: root
     network_mode: host
     privileged: true
     depends_on:
