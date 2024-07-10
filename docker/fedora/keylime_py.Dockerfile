@@ -83,6 +83,7 @@ RUN git clone https://github.com/keylime/keylime.git && \
 cd keylime && \
 python3 ${KEYLIME_HOME}/setup.py install && \
 cp -r ${KEYLIME_HOME}/config/ /etc/keylime && \
+cp -r ${KEYLIME_HOME}/templates/ /usr/share/keylime && \
 pip3 install -r $KEYLIME_HOME/requirements.txt && \
 ${KEYLIME_HOME}/services/installer.sh
 
