@@ -43,9 +43,6 @@ services:
     image: keylime_rust
     hostname: 'keylime-agent'
     user: root
-    volumes:
-      - secure-volume:/var/lib/keylime
-      - /sys/kernel/security/:/sys/kernel/security/
     network_mode: host
     depends_on:
       - keylime-verifier
