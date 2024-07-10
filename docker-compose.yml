@@ -10,7 +10,7 @@ services:
     volumes:
       - secure-volume:/var/lib/keylime
     ports:
-        - "8892:8892"
+      - "8892:8892"
     command: [
       "/usr/local/bin/keylime_verifier"
     ]
@@ -24,8 +24,8 @@ services:
     volumes:
       - secure-volume:/var/lib/keylime
     ports:
-        - "8891:8891"
-        - "8890:8890"
+      - "8891:8891"
+      - "8890:8890"
     command:
       - /bin/bash
       - -c
@@ -48,38 +48,23 @@ services:
       - keylime-verifier
     cap_add:
       - SYS_ADMIN
+    devices:
+      - "/dev/tpm0:/dev/tpm0"
+    volumes:
+      - /sys/kernel/security/:/sys/kernel/security/
     environment:
-    - TCTI=tabrmd:bus_type=system
+      - TCTI=device:/dev/tpm0
     command:
       - /bin/bash
       - -c
       - |
         sleep 6
+        chmod 666 /dev/tpm0
         mkdir /tmp/tpmdir
         rm -rf /var/run/dbus
         mkdir /var/run/dbus
         dbus-daemon --system
-        ls /etc/dbus-1/system.d/
-        swtpm_setup --tpm2 \
-            --tpmstate /tmp/tpmdir \
-            --createek --decryption --create-ek-cert \
-            --create-platform-cert \
-            --display
-        swtpm socket --tpm2 \
-            --tpmstate dir=/tmp/tpmdir \
-            --flags startup-clear \
-            --ctrl type=tcp,port=2322 \
-            --server type=tcp,port=2321 \
-            --daemon
-        tpm2-abrmd \
-            --logger=stdout \
-            --tcti=swtpm: \
-            --allow-root \
-            --flush-all &
-        echo "Ensuring /var/lib/keylime/secure exists..."
-        mkdir -p /var/lib/keylime/secure
-        echo "Attempting to mount tmpfs..."
-        mount -t tmpfs tmpfs /var/lib/keylime/secure && echo "Mounted tmpfs successfully." || echo "Failed to mount tmpfs."
+        mkdir /var/lib/keylime
         id -u keylime &>/dev/null || useradd -m keylime
         chown -R keylime:keylime /var/lib/keylime
         RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
