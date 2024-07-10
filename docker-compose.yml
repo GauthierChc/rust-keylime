@@ -15,8 +15,7 @@ services:
       - /bin/bash
       - -c
       - |
-        /usr/local/bin/keylime_verifier &
-        tail -f /dev/null
+        /usr/local/bin/keylime_verifier
   keylime-registrar:
     build:
       context: ./docker/fedora/
