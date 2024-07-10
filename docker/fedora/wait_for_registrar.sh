@@ -3,5 +3,5 @@
 set -e
 cmd="$@"
 
-sleep 5
+sleep 0
 exec $cmd
