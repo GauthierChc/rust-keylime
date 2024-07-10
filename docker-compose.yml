@@ -16,7 +16,6 @@ services:
       - -c
       - |
         /usr/local/bin/keylime_verifier
-    restart: on-failure
   keylime-registrar:
     build:
       context: ./docker/fedora/
@@ -33,12 +32,10 @@ services:
       - /bin/bash
       - -c
       - |
-        /root/wait.sh
-        /var/lib/keylime/cv_ca/client-cert.crt
+        /root/wait.sh /var/lib/keylime/cv_ca/client-cert.crt
         keylime_registrar
     depends_on:
       - keylime-verifier
-    restart: on-failure
     environment:
       KEYLIME_REGISTRAR_IP: "0.0.0.0"
   keylime-agent:
@@ -62,6 +59,7 @@ services:
       - /bin/bash
       - -c
       - |
+        sleep 6
         chmod 111 /root/wait_for_registrar.sh
         /root/wait_for_registrar.sh
         mkdir /tmp/tpmdir
@@ -92,6 +90,5 @@ services:
         id -u keylime &>/dev/null || useradd -m keylime
         chown -R keylime:keylime /var/lib/keylime
         RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
-    restart: on-failure
 volumes:
   secure-volume:

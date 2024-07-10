@@ -18,5 +18,4 @@ do
 done
 
 >&2 echo "Verifier certificate available - executing registrar"
-sleep 0
 exec $cmd
