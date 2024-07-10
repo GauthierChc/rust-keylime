@@ -55,7 +55,6 @@ services:
       - -c
       - |
         sleep 6
-        /root/wait_for_registrar.sh
         mkdir /tmp/tpmdir
         rm -rf /var/run/dbus
         mkdir /var/run/dbus
