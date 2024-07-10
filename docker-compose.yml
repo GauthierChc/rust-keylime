@@ -55,7 +55,6 @@ services:
       - -c
       - |
         sleep 6
-        chmod 111 /root/wait_for_registrar.sh
         /root/wait_for_registrar.sh
         mkdir /tmp/tpmdir
         rm -rf /var/run/dbus
