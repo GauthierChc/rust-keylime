@@ -5,7 +5,8 @@ services:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
     image: keylime_py
-    hostname: 'keylime-verifier'
+    hostname: keylime-verifier
+    container_name: keylime-verifier
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
@@ -19,7 +20,8 @@ services:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
     image: keylime_py
-    hostname: 'keylime-registrar'
+    hostname: keylime-registrar
+    container_name: keylime-registrar
     user: root
     volumes:
       - secure-volume:/var/lib/keylime
@@ -36,7 +38,8 @@ services:
       context: ./docker/fedora/
       dockerfile: keylime_rust.Dockerfile
     image: keylime_rust
-    hostname: 'keylime-agent'
+    hostname: keylime-agent
+    container_name: keylime-agent
     user: root
     network_mode: host
     depends_on:
