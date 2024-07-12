@@ -79,12 +79,7 @@ RUN dnf install -y \
     && pip3 install gnupg
 
 WORKDIR ${HOME}
-RUN git clone https://github.com/keylime/keylime.git && \
-cd keylime && \
-python3 ${KEYLIME_HOME}/setup.py install && \
-cp -r ${KEYLIME_HOME}/config/ /etc/keylime && \
-pip3 install -r $KEYLIME_HOME/requirements.txt && \
-${KEYLIME_HOME}/services/installer.sh
+
 
 RUN dnf makecache && \
   dnf clean all && \
