@@ -52,6 +52,23 @@ services:
       - /sys/kernel/security/:/sys/kernel/security/
     environment:
       - TCTI=tabrmd:bus_type=system
-    
+    command:
+      - /bin/bash
+      - -c
+      - |
+        sleep 6
+        chmod 666 /dev/tpm0
+        mkdir /tmp/tpmdir
+        rm -rf /var/run/dbus
+        mkdir /var/run/dbus
+        dbus-daemon --system
+        tpm2-abrmd \
+        --logger=stdout \
+        --allow-root \
+        --flush-all &
+        mkdir /var/lib/keylime
+        id -u keylime &>/dev/null || useradd -m keylime
+        chown -R keylime:keylime /var/lib/keylime
+        RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
 volumes:
   secure-volume:
