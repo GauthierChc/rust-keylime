@@ -22,7 +22,7 @@ use std::{
 use uuid::Uuid;
 
 pub static CONFIG_VERSION: &str = "2.0";
-pub static DEFAULT_UUID: &str = "d432fbb3-d2f1-4a97-9ef7-75bd81caaaaa";
+pub static DEFAULT_UUID: &str = "d432fbb3-d2f1-4a97-9ef7-75bd81c00000";
 pub static DEFAULT_IP: &str = "127.0.0.1";
 pub static DEFAULT_PORT: u32 = 9002;
 pub static DEFAULT_CONTACT_IP: &str = "127.0.0.1";
@@ -1118,8 +1118,8 @@ mod tests {
         assert_eq!(get_uuid("hash_ek"), "hash_ek");
         let _ = Uuid::parse_str(&get_uuid("generate")).unwrap(); //#[allow_ci]
         assert_eq!(
-            get_uuid("D432FBB3-D2F1-4A97-9EF7-75BD81CCCCCC"),
-            "d432fbb3-d2f1-4a97-9ef7-75bd81cccccc"
+            get_uuid("D432FBB3-D2F1-4A97-9EF7-75BD81C00000"),
+            "d432fbb3-d2f1-4a97-9ef7-75bd81c00000"
         );
         assert_ne!(
             get_uuid("D432FBB3-D2F1-4A97-9EF7-75BD81C0000X"),
