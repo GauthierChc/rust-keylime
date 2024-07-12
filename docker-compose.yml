@@ -47,11 +47,12 @@ services:
     cap_add:
       - SYS_ADMIN
     devices:
-      - "/dev/tpm0:/dev/tpm0"
+      - /dev/tpm0:/dev/tpm0
     volumes:
       - /sys/kernel/security/:/sys/kernel/security/
     environment:
-      - TCTI=device:/dev/tpm0
+      - TCTI=tabrmd:bus_type=system
+      - KEYLIME_AGENT_UUID:uuid=hash_ek
     command:
       - /bin/bash
       - -c
@@ -62,6 +63,10 @@ services:
         rm -rf /var/run/dbus
         mkdir /var/run/dbus
         dbus-daemon --system
+        tpm2-abrmd \
+        --logger=stdout \
+        --allow-root \
+        --flush-all &
         mkdir /var/lib/keylime
         id -u keylime &>/dev/null || useradd -m keylime
         chown -R keylime:keylime /var/lib/keylime
