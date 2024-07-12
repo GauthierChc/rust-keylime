@@ -52,7 +52,6 @@ services:
       - /sys/kernel/security/:/sys/kernel/security/
     environment:
       - TCTI=tabrmd:bus_type=system
-      - KEYLIME_AGENT_UUID:uuid=hash_ek
     command:
       - /bin/bash
       - -c
