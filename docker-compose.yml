@@ -48,6 +48,7 @@ services:
       - SYS_ADMIN
     devices:
       - /dev/tpm0:/dev/tpm0
+      - /dev/tpmrm0:/dev/tpmrm0
     volumes:
       - /sys/kernel/security/:/sys/kernel/security/
     environment:

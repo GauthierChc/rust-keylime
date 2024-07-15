@@ -42,8 +42,6 @@ openssl-devel \
 redhat-rpm-config \
 rust clippy cargo \
 pkg-config \
-swtpm \
-swtpm-tools \
 tpm2-abrmd \
 tpm2-tools \
 tpm2-tss \
