@@ -70,6 +70,6 @@ services:
         mkdir /var/lib/keylime
         id -u keylime &>/dev/null || useradd -m keylime
         chown -R keylime:keylime /var/lib/keylime
-        RUST_LOG=keylime_agent=debug /usr/bin/keylime_agent
+        RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
 volumes:
   secure-volume:
