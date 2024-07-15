@@ -82,6 +82,8 @@ WORKDIR ${HOME}
 RUN git clone https://github.com/keylime/keylime.git && \
 cd keylime && \
 python3 ${KEYLIME_HOME}/setup.py install && \
+mkdir -p /usr/share/keylime/templates && \
+cp -r /root/keylime/templates /usr/share/keylime && \
 cp -r ${KEYLIME_HOME}/config/ /etc/keylime && \
 pip3 install -r $KEYLIME_HOME/requirements.txt && \
 ${KEYLIME_HOME}/services/installer.sh
