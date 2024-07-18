@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.8'
 services:
   keylime-verifier:
     build:
@@ -49,8 +49,10 @@ services:
     devices:
       - /dev/tpm0:/dev/tpm0
       - /dev/tpmrm0:/dev/tpmrm0
+    # debug purpose, need to delete 'secure-volume' here
     volumes:
       - /sys/kernel/security/:/sys/kernel/security/
+      - secure-volume:/var/lib/keylime
     environment:
       - TCTI=tabrmd:bus_type=system
     command:
