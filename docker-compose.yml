@@ -8,6 +8,7 @@ services:
     hostname: keylime-verifier
     container_name: keylime-verifier
     user: root
+    network_mode: host
     volumes:
       - secure-volume:/var/lib/keylime
     ports:
@@ -23,6 +24,7 @@ services:
     hostname: keylime-registrar
     container_name: keylime-registrar
     user: root
+    network_mode: host
     volumes:
       - secure-volume:/var/lib/keylime
     ports:
