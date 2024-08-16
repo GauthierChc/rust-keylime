@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   keylime-verifier:
+  require_ek_cert set to False
     build:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
