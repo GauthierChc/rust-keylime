@@ -5,7 +5,7 @@ services:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
     image: keylime_py
-    container_name: keylime-verifier
+    hostname: keylime-verifier
     user: root
     network_mode: host
     volumes:
@@ -16,10 +16,9 @@ services:
       "/usr/local/bin/keylime_verifier"
     ]
     deploy:
-      replicas: 1
       placement:
         constraints:
-          - node.labels.verifier-node == true
+          - [node.hostname == verifier-node]
     environment:
       KEYLIME_TENANT_REQUIRE_EK_CERT: "False"
   keylime-registrar:
@@ -27,7 +26,7 @@ services:
       context: ./docker/fedora/
       dockerfile: keylime_py.Dockerfile
     image: keylime_py
-    container_name: keylime-registrar
+    hostname: keylime-registrar
     user: root
     network_mode: host
     volumes:
@@ -41,16 +40,15 @@ services:
     environment:
       KEYLIME_REGISTRAR_IP: "0.0.0.0"
     deploy:
-      replicas: 1
       placement:
         constraints:
-          - node.labels.registrar-node == true
+          - [node.hostname == verifier-node]
   keylime-agent:
     build:
       context: ./docker/fedora/
       dockerfile: keylime_rust.Dockerfile
     image: keylime_rust
-    container_name: keylime-agent
+    hostname: keylime-agent
     user: root
     network_mode: host
     depends_on:
@@ -86,9 +84,8 @@ services:
         chown -R keylime:keylime /var/lib/keylime
         RUST_LOG=keylime_agent=trace /usr/bin/keylime_agent
     deploy:
-      replicas: 1
       placement:
         constraints:
-          - node.labels.agent-node == true
+          - [node.hostname == verifier-node]
 volumes:
   secure-volume:
