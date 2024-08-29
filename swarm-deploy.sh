@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Set the IP addresses of the admin, managers, and workers nodes
-admin=172.31.45.82
-mainManagerNode=54.80.8.228
-verifierNode=54.152.246.228
+admin=10.89.114.188
+mainManagerNode=3.85.23.69
+verifierNode=3.90.165.165
 
-# Set the workers' hostnames
-managerHostname=manager-node
-verifierHostname=verifier-node
+# Set the workers' labels
+managerLabel=manager-node
+verifierLabel=verifier-node
 
 # User of remote machines
 localUser=damien
@@ -19,18 +19,21 @@ extra_managers=()
 
 # Array of workers
 workers=($verifierNode)
+declare -A workersLabels
+workersLabels=([$verifierNode]=$verifierLabel)
 
 # Array of all
 all=($mainManagerNode $verifierNode)
-declare -A allHostnames
-allHostnames=([$mainManagerNode]=$managerHostname [$verifierHostname]=$verifierHostname)
 
 #ssh certificate name variable
-certName=omar-vm-priv-key.pem
+certName=omar-vm-key.pem
 
 #############################################
 #            DO NOT EDIT BELOW              #
 #############################################
+
+# Exit immediately if any command exits with a non-zero status
+set -e  # Exit immediately if any command exits with a non-zero status
 
 # Change permissions of SSH keys
 chmod 600 /home/$localUser/.ssh/$certName
@@ -50,16 +53,12 @@ scp -i /home/$localUser/.ssh/$certName /home/$localUser/.ssh/$certName  $distUse
 # 
 # Install dependencies for each node (Docker)
 for newnode in "${all[@]}"; do
-  nodeHostname=${allHostnames[$newnode]}
   ssh $distUser@$newnode -i ~/.ssh/$certName sudo su <<EOF
+    echo --------------------------------------------------
+    echo -------- INSTALLING DEPENDENCIES ON NODE ---------
+    echo --------------------------------------------------
     iptables -F    
     iptables -P INPUT ACCEPT
-    # Change Hostname
-    hostnamectl set-hostname $nodeHostname
-    if [ $? -ne 0 ]; then
-      echo "Failed to set hostname on $newnode"
-      exit 1
-    fi
     # Remove potential residual files
     rm -rf /var/lib/docker
     rm -rf /var/lib/containerd
@@ -97,13 +96,6 @@ for newnode in "${all[@]}"; do
       echo "Failed to install Docker on $newnode"
       exit 1
     fi
-    docker swarm leave --force
-    # Install git:
-    apt-get install git -y
-    if [ $? -ne 0 ]; then
-      echo "Failed to install git on $newnode"
-      exit 1
-    fi
     exit
 EOF
   if [ $? -ne 0 ]; then
@@ -114,7 +106,12 @@ EOF
 done
 
 # Step 1: Create Swarm on the main manager node
-ssh -tt $distUser@$mainManagerNode -i ~/.ssh/$certName sudo su <<EOF
+ssh $distUser@$mainManagerNode -i ~/.ssh/$certName sudo su <<EOF
+  echo --------------------------------------------------
+  echo --------- CREATE SWARM ON MANAGER NODE -----------
+  echo --------------------------------------------------
+  # Debug purpose
+  docker swarm leave --force
   docker swarm init --advertise-addr $mainManagerNode --default-addr-pool 10.20.0.0/16 --default-addr-pool-mask-length 26
   if [ $? -ne 0 ]; then
     echo "Failed to initialize Docker Swarm on $mainManagerNode"
@@ -131,27 +128,14 @@ ssh -tt $distUser@$mainManagerNode -i ~/.ssh/$certName sudo su <<EOF
     exit 1
   fi
   echo "StrictHostKeyChecking no" > ~/.ssh/config
-  ssh-copy-id -i /home/$distUser/.ssh/$certName $localUser@$admin
-  if [ $? -ne 0 ]; then
-    echo "Error copying SSH key to admin node."
-    exit 1
-  fi
-  scp -i /home/$distUser/.ssh/$certName /home/$distUser/manager.txt $localUser@$admin:~/manager
-  if [ $? -ne 0 ]; then
-    echo "Error copying manager join token to admin node."
-    exit 1
-  fi
-  scp -i /home/$distUser/.ssh/$certName /home/$distUser/worker.txt $localUser@$admin:~/worker
-  if [ $? -ne 0 ]; then
-    echo "Error copying worker join token to admin node."
-    exit 1
-  fi
   exit
 EOF
 if [ $? -ne 0 ]; then
   echo "Error during SSH operation on $mainManagerNode."
   exit 1
 fi
+scp -i ~/.ssh/$certName $distUser@$mainManagerNode:/home/$distUser/manager.txt ~/manager
+scp -i ~/.ssh/$certName $distUser@$mainManagerNode:/home/$distUser/worker.txt ~/worker
 echo -e " \033[32;5mmainManagerNode Completed\033[0m"
 
 # Step 2: Set variables
@@ -161,7 +145,10 @@ workerToken=`cat worker`
 # Step 3: Connect additional manager
 if [[ $additionnal_managers == true ]]; then
   for newnode in "${extra_managers[@]}"; do
-    ssh -tt $distUser@$newnode -i ~/.ssh/$certName sudo su <<EOF
+    ssh $distUser@$newnode -i ~/.ssh/$certName sudo su <<EOF
+    echo --------------------------------------------------
+    echo -------- CONNECTING ADDITIONNAL MANAGER ----------
+    echo --------------------------------------------------
       docker swarm join --token $managerToken $mainManagerNode
       if [ $? -ne 0 ]; then
         echo "Failed to join Docker Swarm as manager on $newnode"
@@ -179,17 +166,38 @@ fi
 
 # Step 4: Connect additional workers
 for workernode in "${workers[@]}"; do
-  ssh -tt $distUser@$workernode -i ~/.ssh/$certName sudo su <<EOF
+  nodeLabel=${workersLabels[$workernode]}
+  ssh $distUser@$workernode -i ~/.ssh/$certName sudo su <<EOF
+    echo --------------------------------------------------
+    echo --------- CONNECTING ADDITIONNAL WORKER ----------
+    echo --------------------------------------------------
     docker swarm join --token $workerToken $mainManagerNode
     if [ $? -ne 0 ]; then
       echo "Failed to join Docker Swarm as worker on $workernode"
       exit 1
     fi
+    echo "Waiting to be visible to the manager"
+    for i in {1..30}; do
+      sleep 5
+      NODE_ID=\$(docker node ls --filter "name=\$(hostname)" -q)
+      if [ -n "\$NODE_ID" ]; then
+        docker node update --label-add $nodeLabel=true \$NODE_ID
+        echo "Successfully added label on $workernode)"
+        exit 0
+      fi
+    done
+    if [ $? -ne 0 ]; then
+          echo "Failed to modify the label on \$(hostname)"
+          exit 1
+        fi
     exit
 EOF
   if [ $? -ne 0 ]; then
     echo "Error during SSH operation on $workernode."
     exit 1
   fi
-  echo -e " \033[32;5m$workernode - Worker node joined successfully with hostname $workerHostname!\033[0m"
+  echo -e " \033[32;5m$workernode - Worker node joined successfully with label $workerLabel!\033[0m"
 done
+
+cd /home/damien/modified-github/rust-keylime
+docker stack deploy -c docker-compose.yml keylime-swarm

@@ -18,7 +18,7 @@ services:
     deploy:
       placement:
         constraints:
-          - [node.hostname == verifier-node]
+          - node.labels.verifier-node==true
     environment:
       KEYLIME_TENANT_REQUIRE_EK_CERT: "False"
   keylime-registrar:
@@ -42,7 +42,7 @@ services:
     deploy:
       placement:
         constraints:
-          - [node.hostname == verifier-node]
+          - node.labels.registrar-node==true
   keylime-agent:
     build:
       context: ./docker/fedora/
@@ -86,6 +86,6 @@ services:
     deploy:
       placement:
         constraints:
-          - [node.hostname == verifier-node]
+          - node.labels.agent-node==true
 volumes:
   secure-volume:
